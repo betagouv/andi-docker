@@ -17,7 +17,7 @@ jobs:
     name: Build docker evolutility
     script:
     - echo "Building commit $TRAVIS_COMMIT"
-    - cd misc/docker/evolutility
+    - cd evolutility
     - echo "$DOCKER_PW" | docker login -u "$DOCKER_USER" --password-stdin
     - 'docker build -t andi_evolutility --build-arg PG_USER=$PG_USER  --build-arg
       PG_PASS=$PG_PASS --build-arg PG_PORT=$PG_PORT ./
@@ -28,7 +28,7 @@ jobs:
     - docker push $DOCKER_USER/private:andi_evolutility
   - name: Build docker form_handler
     script:
-    - cd misc/docker/form_handler
+    - cd form_handler
     - echo "$DOCKER_PW" | docker login -u "$DOCKER_USER" --password-stdin
     - 'docker build -t andi_formhandler --build-arg ARG_MG_BOX=$MAILGUN_BOX --build-arg
       ARG_MG_KEY=$MAILGUN_KEY --build-arg PG_USER=$PG_USER  --build-arg PG_PASS=$PG_PASS
