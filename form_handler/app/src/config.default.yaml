@@ -1,6 +1,7 @@
 pickle_db: './pickle.db'
 pickle_persist: False
-csv_file: './log.csv'
+csv_file:
+    landing_page: './log.csv'
 postgresql:
   dbname: 'DBNAME'
   user: 'DBUSER'
