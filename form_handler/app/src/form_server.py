@@ -193,6 +193,11 @@ def create_app():
         definition = app.handlers['jdb_psh']
         return handle_request(request, app, definition)
 
+    @app.route('/jdb_entreprise', methods=['GET', 'POST'])
+    def jdb_entreprise():
+        definition = app.handlers['jdb_entreprise']
+        return handle_request(request, app, definition)
+
     return app
 
 

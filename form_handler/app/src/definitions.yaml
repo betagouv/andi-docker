@@ -59,3 +59,33 @@ jdb_psh:
             %(desc_events_ok)s,
             %(desc_events_nook)s
         )
+
+jdb_entreprise:
+    name: 'jdb_entreprise'
+    fields:
+        - 'andi_id'
+        - 'date'
+        - 'used_it_tools'
+        - 'desc_facts'
+        - 'desc_difficulties'
+    redirect: False
+    persist_to_db: True
+    persist_to_csv: False
+    send_mail: False
+    notify_mail: True
+    hidden_check: 'zloe'
+    sql: |-
+        INSERT INTO "form_jdb_entreprise" (
+            id_andi,
+            date_day,
+            utilisation_outils_it,
+            faits,
+            difficultes
+        )
+        VALUES (
+            %(andi_id)s,
+            %(date)s,
+            %(used_it_tools)s,
+            %(desc_facts)s,
+            %(desc_difficulties)s
+        )
