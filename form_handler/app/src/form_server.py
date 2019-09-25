@@ -44,7 +44,8 @@ def handler_defs_get():
     return handlers
 
 def data2hash(data):
-    key_info = f'{data["nom"]}{data["prenom"]}{data["email"]}'
+    print(data.values())
+    key_info = ''.join(data.values())
     return str(hash(key_info))
 
 
@@ -106,12 +107,11 @@ def handle_request(request, app, definition):
         logger.info('Security check failed')
         abort(400)
 
-    try:
-        data = gather(definition['fields'], request, is_post, is_get, is_json)
-    except Exception as exc:
-        logger.exception(exc)
-        logger.warning('Failed to gather keys')
-        abort(400)
+    data = gather(definition['fields'], request, is_post, is_get, is_json)
+    for k, v in data.items():
+        if not v:
+            logger.warning('Failed to gather key "%s"', k)
+            abort(400)
 
     # Check for duplicate submit
     submission_key = data2hash(data)
@@ -119,7 +119,7 @@ def handle_request(request, app, definition):
     store = get_local_store(app)
     if store.get(submission_key) is not False:  # Data already received
         logging.info('Duplicate submission, ignoring')
-        if definition['redirect ']and is_post and not is_json:
+        if definition['redirect'] and is_post and not is_json:
             return redirect(definition['redirect_url'], code=302)
         return Response(
             json.dumps({'error': 'data already submitted'}),
@@ -151,20 +151,19 @@ def handle_request(request, app, definition):
                 **data})
 
     print(json.dumps(data, indent=2))
-    if definition['send_mail']:
-        try:
-            with get_db(app) as dbconn:
-                assets = get_assets(definition['name'], dbconn)
+    try:
+        with get_db(app) as dbconn:
+            assets = get_assets(definition['name'], dbconn)
 
-            if send_mail.send_mail(definition['name'], data, assets):
-                if definition['notify_mail']:
-                    send_mail.notify_mail(definition['name'], data)
-                logger.debug('Mail sent')
-            else:
-                logger.warning('Failed to send mail %s', data)
-        except Exception as exc:
-            logger.exception(exc)
-            logger.warning('Failed to send mail %s, recovering', data)
+        if definition['send_mail']:
+            send_mail.send_mail(definition['name'], data, assets)
+
+        if definition['notify_mail']:
+            send_mail.notify_mail(definition['name'], data)
+
+    except Exception as exc:
+        logger.exception(exc)
+        logger.warning('Failed to send mail %s, recovering', data)
 
     # redirect with 302, even if 303 is more (too ?) specific
     if is_post and not is_json:
@@ -187,6 +186,11 @@ def create_app():
     @app.route('/inscription', methods=['GET', 'POST'])
     def inscription():
         definition = app.handlers['landing_page']
+        return handle_request(request, app, definition)
+
+    @app.route('/jdb_psh', methods=['GET', 'POST'])
+    def jdb_psh():
+        definition = app.handlers['jdb_psh']
         return handle_request(request, app, definition)
 
     return app
