@@ -1,7 +1,7 @@
 module.exports = {
     id: 'jdb_entreprise',
     active: true,
-    table: 'form_jdb_psh',
+    table: 'form_jdb_entreprise',
     pKey: 'id_internal',
     title: 'Journal de bord Entreprise',
     titleField: 'id_internal',
