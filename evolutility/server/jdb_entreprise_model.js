@@ -8,7 +8,7 @@ module.exports = {
     searchFields: [],
     fields: [{
         id: 'andi_id',
-        column: 'andi_id',
+        column: 'id_andi',
         type: 'text',
         label: 'Identifiant ANDi',
         readOnly: true
