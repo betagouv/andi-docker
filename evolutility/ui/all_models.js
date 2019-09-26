@@ -11,8 +11,8 @@ import {
 import user from './user_model'
 import asset from './asset_model'
 import company from './company_model'
-import jdb_psh from './jdb_psh_mode'
-import jdb_entreprise from './jdb_entreprise_mode'
+import jdb_psh from './jdb_psh_model'
+import jdb_entreprise from './jdb_entreprise_model'
 
 
 let models = {
