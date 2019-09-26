@@ -24,7 +24,7 @@ module.exports = {
         maxLength: 120,
     }, {
         id: 'activites_semaines',
-        type: 'textmultiline'
+        type: 'textmultiline',
         label: 'Activités semaine',
         inMany: false,
         required: true,
@@ -34,7 +34,7 @@ module.exports = {
         label: 'Utilisation outils IT',
         inMany: false,
         required: true,
-        type: 'lov'
+        type: 'lov',
         list: [
             { 'id': 'oui', 'text': 'Oui' },
             { 'id': 'non', 'text': 'Non' },
@@ -42,7 +42,7 @@ module.exports = {
         width:100,
     }, {
         id: 'evenements_plu',
-        type: 'textmultiline'
+        type: 'textmultiline',
         label: 'Événements qui ont plu',
         inMany: false,
         required: true,

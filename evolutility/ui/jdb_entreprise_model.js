@@ -24,7 +24,7 @@ module.exports = {
         id: 'utilisation_outils_it',
         label: 'Utilisation outils IT',
         inMany: false,
-        type: 'lov'
+        type: 'lov',
         list: [
             { 'id': 'oui', 'text': 'Oui' },
             { 'id': 'non', 'text': 'Non' },

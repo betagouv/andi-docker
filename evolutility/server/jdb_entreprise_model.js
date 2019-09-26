@@ -17,24 +17,24 @@ module.exports = {
         column: 'date_day',
         type: 'date',
         label: 'Jour concerné',
-        inMany: true
+        inMany: true,
     }, {
         id: 'utilisation_outils_it',
         column: 'utilisation_outils_it',
-        type: 'text'
+        type: 'text',
         label: 'Utilisation outils IT',
-        inMany: false
+        inMany: false,
     }, {
         id: 'faits',
         column: 'faits',
-        type: 'text'
+        type: 'text',
         label: 'Faits marquants',
-        inMany: false
+        inMany: false,
     }, {
         id: 'difficultes',
         column: 'difficultes',
-        type: 'text'
+        type: 'text',
         label: 'Difficultés particulières',
-        inMany: false
+        inMany: false,
     }]
 }

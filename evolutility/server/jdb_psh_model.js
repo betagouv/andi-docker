@@ -11,36 +11,36 @@ module.exports = {
         column: 'andi_id',
         type: 'text',
         label: 'Identifiant ANDi',
-        readOnly: true
+        readOnly: true,
     }, {
         id: 'date',
         column: 'date_day',
         type: 'date',
         label: 'Jour concerné',
-        inMany: true
+        inMany: true,
     }, {
         id: 'activites_semaines',
         column: 'activites_semaines',
-        type: 'text'
+        type: 'text',
         label: 'Activités semaine',
-        inMany: false
+        inMany: false,
     }, {
         id: 'utilisation_outils_it',
         column: 'utilisation_outils_it',
-        type: 'text'
+        type: 'text',
         label: 'Utilisation outils IT',
-        inMany: false
+        inMany: false,
     }, {
         id: 'evenements_plu',
         column: 'evenements_plu',
-        type: 'text'
+        type: 'text',
         label: 'Événements qui ont plu',
-        inMany: false
+        inMany: false,
     }, {
         id: 'evenements_plu',
         column: 'evenements_plu',
-        type: 'text'
+        type: 'text',
         label: 'Événements qui ont deplu',
-        inMany: false
+        inMany: false,
     }]
 }
