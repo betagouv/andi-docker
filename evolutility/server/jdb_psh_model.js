@@ -12,6 +12,7 @@ module.exports = {
         type: 'text',
         label: 'Identifiant ANDi',
         readOnly: true,
+        inMany: true,
     }, {
         id: 'date',
         column: 'date_day',
