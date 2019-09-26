@@ -11,7 +11,8 @@ module.exports = {
         type: 'text',
         required: true,
         readOnly: true,
-        width:30,
+        inMany: true,
+        width:50,
         maxLength: 120,
     }, {
         id: 'date',
@@ -19,43 +20,54 @@ module.exports = {
         label: 'Jour concerné',
         required: true,
         inMany: true,
-        width:30,
+        width:50,
         maxLength: 120,
     }, {
         id: 'activites_semaines',
-        type: 'text'
+        type: 'textmultiline'
         label: 'Activités semaine',
         inMany: false,
         required: true,
-        width:30,
-        maxLength: 120,
+        width:100,
     }, {
         id: 'utilisation_outils_it',
-        type: 'lov'
         label: 'Utilisation outils IT',
         inMany: false,
         required: true,
+        type: 'lov'
         list: [
             { 'id': 'oui', 'text': 'Oui' },
             { 'id': 'non', 'text': 'Non' },
         ],
-        width:30,
-        maxLength: 120,
+        width:100,
     }, {
         id: 'evenements_plu',
-        type: 'text'
+        type: 'textmultiline'
         label: 'Événements qui ont plu',
         inMany: false,
         required: true,
-        width:30,
-        maxLength: 120,
+        width:100,
     }, {
-        id: 'evenements_plu',
-        type: 'text'
+        id: 'evenements_deplu',
+        type: 'textmultiline',
         label: 'Événements qui ont deplu',
         inMany: false,
         required: true,
-        width:30,
-        maxLength: 120,
-    }]
+        width:100,
+    }],
+
+    groups: [{
+        id: 'metadata',
+        type: 'panel',
+        label: 'Données',
+        width: 100,
+        fields: ['andi_id', 'date']
+    }, {
+        id: 'data',
+        type: 'panel',
+        label: 'Journal de Bord PSH',
+        width: 100,
+        fields: ['activites_semaines', 'utilisation_outils_it', 'evenements_plu', 'evenements_deplu']
+    }
+    ]
 }
