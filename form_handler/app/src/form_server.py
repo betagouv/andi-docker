@@ -185,7 +185,7 @@ def handle_request(request, app, definition):
 
     # redirect with 302, even if 303 is more (too ?) specific
     if is_post and not is_json:
-        return redirect(definition['redirect'], code=302)
+        return redirect(definition['redirect_url'], code=302)
 
     save_local_store(app)
     return jsonify(data)
@@ -219,96 +219,6 @@ def create_app():
         return handle_request(request, app, definition)
 
     return app
-
-
-#         ## legacy
-#         ####################################
-#         if is_get:
-#             if request.args.get('verstopt') != 'vrst':
-#             data = {
-#                 'nom': request.args.get('nom'),
-#                 'prenom': request.args.get('prenom'),
-#                 'email': request.args.get('email'),
-#                 'form_type': 'landing_page'
-#             }
-#         elif is_json:
-#             data = request.get_json()
-#             data['form_type'] = 'landing_page'
-#             if data.get('verstop') != 'vrst':
-#                 logger.info('Security check failed')
-#                 abort(400)
-#             del data['verstopt']
-#         else:
-#             data = {
-#                 'nom': request.form.get('nom'),
-#                 'prenom': request.form.get('prenom'),
-#                 'email': request.form.get('email'),
-#                 'form_type': 'landing_page'
-#             }
-#             if request.form.get('verstopt') != 'vrst':
-#                 logger.info('Security check failed')
-#                 abort(400)
-# 
-#         # Validate data
-#         handler.
-#         if not data['nom']:
-#             logger.warning('Missing field NOM')
-#             abort(400)
-#         if not data['prenom']:
-#             logger.warning('Missing field PRENOM')
-#             abort(400)
-#         if not data['email']:
-#             logger.warning('Missing field EMAIL')
-#             abort(400)
-# 
-#         # Check if not already received
-#         submission_key = data2hash(data)
-#         logging.info('Submission key is "%s"', submission_key)
-#         store = get_local_store(app)
-#         if store.get(submission_key) is not False:  # Data already received
-#             logging.info('Duplicate submission, ignoring')
-#             if is_post and not is_json:
-#                 return redirect("https://andi.beta.gouv.fr/merci", code=302)
-#             return Response(
-#                 json.dumps({'error': 'data already submitted'}),
-#                 status=409,
-#                 mimetype='application/json'
-#             )
-#         logging.info('New submission accepted')
-#         store.set(submission_key, 'true')
-#         save_local_store(app)
-# 
-#         # Write to database
-#         try:
-#             with get_db(app) as dbconn:
-#                 write_user(data, dbconn)
-#         except Exception as e:
-#             logger.exception(e)
-#             logger.warning('Database lost, continueing')
-# 
-#         # Log to csv
-#         with open(app.config['csv_file'], 'a', newline='') as csvf:
-#             columns = ['nom', 'prenom', 'email', 'ip', 'form_type']
-#             wr = csv.DictWriter(csvf, columns)
-#             wr.writerow({'ip': request.remote_addr, **data})
-# 
-#         # Send "received" mail
-#         print(json.dumps(data, indent=2))
-#         with get_db(app) as dbconn:
-#             assets = get_assets(data['form_type'], dbconn)
-# 
-#         if send_mail.send_mail(data['form_type'], data, assets):
-#             send_mail.notify_mail(data['form_type'], data)
-#         else:
-#             logger.warning('Failed to send mail %s', data)
-# 
-#         # redirect with 302, even if 303 is more (too ?) specific
-#         if is_post and not is_json:
-#             return redirect("https://andi.beta.gouv.fr/merci", code=302)
-# 
-#         return jsonify(data)
-#     return app
-
 
 if __name__ == '__main__':
     create_app().run()
