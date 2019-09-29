@@ -18,6 +18,7 @@ pgware = {editable = true,git = "https://github.com/PieterjanMontens/pgware.git"
 liquidpy = "*"
 waitress = "*"
 mistune = "*"
+flask-cors = "*"
 
 [requires]
 python_version = "3.7"

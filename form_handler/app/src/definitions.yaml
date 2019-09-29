@@ -38,7 +38,7 @@ jdb_psh:
         - 'desc_events_nook'
     redirect: False
     persist_to_db: True
-    persist_to_csv: False
+    persist_to_csv: True
     send_mail: False
     notify_mail: True
     hidden_check: 'iuhs'

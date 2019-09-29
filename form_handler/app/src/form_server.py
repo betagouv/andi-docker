@@ -7,6 +7,7 @@ import csv
 import logging
 import send_mail
 import sys
+from flask_cors import CORS
 from flask import (
     Flask,
     request,
@@ -84,8 +85,8 @@ def gather(fields, request, is_post, is_get, is_json):
     if is_get:
         data = {k : request.args.get(k) for k in fields}
     elif is_json:
-        data = request.get_json()
-        del data['verstopt']
+        rawdata = request.get_json()
+        data = {k : rawdata.get(k) for k in fields}
     else:
         data = {k : request.form.get(k) for k in fields}
     return data
@@ -94,14 +95,28 @@ def handle_request(request, app, definition):
     # Prepare parsing, gather data
     is_post = request.method == 'POST'
     is_get = request.method == 'GET'
-    is_json = request.content_type == 'application/json'
-    if is_get:
-        check = request.args.get('verstopt')
-    elif is_post:
-        check = request.form.get('verstopt')
-    elif is_json:
-        d = request.get_json()
-        check = d['verstopt']
+    is_json = 'application/json' in request.content_type
+    logger.debug(
+        'method: %s, ctype: %s => json: %s, get: %s, post: %s',
+        request.method,
+        request.content_type,
+        is_json,
+        is_get,
+        is_post
+    )
+    try:
+        if is_json:
+            d = request.get_json()
+            check = d['verstopt']
+        elif is_get:
+            check = request.args.get('verstopt')
+        elif is_post:
+            check = request.form.get('verstopt')
+    except Exception as exc:
+        logger.exception(exc)
+        raise exc
+
+    logger.debug('Check received: %s', check)
 
     if check != definition['hidden_check']:
         logger.info('Security check failed')
@@ -109,9 +124,15 @@ def handle_request(request, app, definition):
 
     data = gather(definition['fields'], request, is_post, is_get, is_json)
     for k, v in data.items():
-        if not v:
+        if v is None:
             logger.warning('Failed to gather key "%s"', k)
             abort(400)
+
+    print('---- data received ----')
+    print(json.dumps(data, indent=2))
+    print('-----------------------')
+
+    logger.debug('Received data: %s', data)
 
     # Check for duplicate submit
     submission_key = data2hash(data)
@@ -126,10 +147,8 @@ def handle_request(request, app, definition):
             status=409,
             mimetype='application/json'
         )
-
-    logging.info('New submission accepted')
     store.set(submission_key, 'true')
-    save_local_store(app)
+
 
     # Write to database
     if definition['persist_to_db']:
@@ -150,7 +169,6 @@ def handle_request(request, app, definition):
                 'form_type': definition['name'],
                 **data})
 
-    print(json.dumps(data, indent=2))
     try:
         with get_db(app) as dbconn:
             assets = get_assets(definition['name'], dbconn)
@@ -169,6 +187,7 @@ def handle_request(request, app, definition):
     if is_post and not is_json:
         return redirect(definition['redirect'], code=302)
 
+    save_local_store(app)
     return jsonify(data)
 
 
@@ -176,6 +195,7 @@ def handle_request(request, app, definition):
 # #############################################################################
 def create_app():
     app = Flask(__name__)
+    CORS(app)
     app.config = {**app.config, **cfg_get('./config.yaml')}
     app.handlers = handler_defs_get()
 
