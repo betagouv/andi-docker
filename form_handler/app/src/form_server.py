@@ -116,10 +116,10 @@ def handle_request(request, app, definition):
         logger.exception(exc)
         raise exc
 
-    logger.debug('Check received: %s', check)
 
     if check != definition['hidden_check']:
-        logger.info('Security check failed')
+        logger.debug('Check received: %s, expected: %s', check, definition['hidden_check'])
+        logger.error('Security check failed')
         abort(400)
 
     data = gather(definition['fields'], request, is_post, is_get, is_json)
