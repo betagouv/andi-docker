@@ -38,8 +38,8 @@ module.exports = {
         label: 'Événements qui ont plu',
         inMany: false,
     }, {
-        id: 'evenements_plu',
-        column: 'evenements_plu',
+        id: 'evenements_deplu',
+        column: 'evenements_deplu',
         type: 'text',
         label: 'Événements qui ont deplu',
         inMany: false,
