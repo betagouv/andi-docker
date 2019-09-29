@@ -95,7 +95,7 @@ def handle_request(request, app, definition):
     # Prepare parsing, gather data
     is_post = request.method == 'POST'
     is_get = request.method == 'GET'
-    is_json = 'application/json' in request.content_type
+    is_json = request.content_type and 'application/json' in request.content_type
     logger.debug(
         'method: %s, ctype: %s => json: %s, get: %s, post: %s',
         request.method,
