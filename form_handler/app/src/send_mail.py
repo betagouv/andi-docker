@@ -7,6 +7,7 @@ import urllib
 from requests.utils import requote_uri
 import re
 from liquid import Liquid
+import pprint
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.getLevelName('DEBUG'))
@@ -53,7 +54,10 @@ MAILGUN_KEY = os.environ['MG_KEY']
 MAILGUN_SANDBOX = os.environ['MG_BOX']
 
 def notify_mail(form_type, data):
-    text = Liquid(MASK_NOTIFICATION).render(form_type=form_type, data=json.dumps(data, indent=4))
+    text = Liquid(MASK_NOTIFICATION).render(
+        form_type=form_type,
+        data=pprint.pformat(data, indent=4)
+    )
     subject = f'Formulaire reçu type "{form_type}"'
     send(
         recipient='andi@beta.gouv.fr',
