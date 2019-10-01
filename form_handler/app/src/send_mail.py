@@ -1,13 +1,14 @@
-import requests
 import logging
 import os
-import json
-import mistune
-import urllib
-from requests.utils import requote_uri
-import re
-from liquid import Liquid
 import pprint
+import re
+import urllib
+
+# import json
+import mistune
+import requests
+from liquid import Liquid
+from requests.utils import requote_uri
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.getLevelName('DEBUG'))

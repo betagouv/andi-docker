@@ -1,8 +1,10 @@
 import os
+import tempfile
+
 # import tempfile
 from behave import fixture, use_fixture
+
 from src import form_server as server
-import tempfile
 
 
 @fixture
