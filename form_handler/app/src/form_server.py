@@ -1,22 +1,17 @@
+import csv
+import json
+import logging
 import os
+import sys
+
+import pgware
 import pickledb
 import yaml
-import json
-import pgware
-import csv
-import logging
-import send_mail
-import sys
+from flask import Flask, Response, abort, g, jsonify, redirect, request
 from flask_cors import CORS
-from flask import (
-    Flask,
-    request,
-    Response,
-    redirect,
-    jsonify,
-    abort,
-    g
-)
+
+import send_mail
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.getLevelName('DEBUG'))
 logger.addHandler(logging.StreamHandler())

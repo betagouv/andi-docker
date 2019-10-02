@@ -1,6 +1,7 @@
-from behave import given, when, then
-from src import form_server as server
 import pickledb
+from behave import given, then, when
+
+from src import form_server as server
 
 
 @given(u'valid subscription data')
