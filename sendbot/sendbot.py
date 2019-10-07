@@ -143,7 +143,7 @@ def daily_jdb_psh(ctx):
         elif ctx.obj['test_mail']:
             mail = ctx.obj['test_mail']
         else:
-            mail = ctx.person_rec['mail']
+            mail = person_rec['mail']
 
         mail_data = {
             'prenom': name,
