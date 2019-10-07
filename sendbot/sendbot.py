@@ -24,6 +24,7 @@ MAPPINGS_IMMERSION = [
     ('Lien JDB - PSH', 'psh_jdb_link'),
     ('Lien JDB - EMPLOYEUR', 'entreprise_jdb_link'),
     ('Etape', 'stage'),
+    ('Bilan envoy\u00e9', 'report_sent'),
 ]
 
 MAPPINGS_PEOPLE = [
@@ -35,6 +36,13 @@ MAPPINGS_PEOPLE = [
 MAPPINGS_ENTREPRISE = [
     ('Name', 'name')
 ]
+
+AIRTABLES = [
+        ('Immersion', 'immersions', MAPPINGS_IMMERSION),
+        ('Fiches PSH', 'people', MAPPINGS_PEOPLE),
+        ('Entreprises / Employeurs', 'companies', MAPPINGS_ENTREPRISE),
+    ]
+
 
 
 def map_record(record, mapping):
@@ -61,6 +69,12 @@ def get_assets(mail_def, dbconn):
     data = {k: v for k, v in results}
     return(data)
 
+
+def update_table(ctx, table, record_id, field, value):
+    airtable = Airtable(ctx.obj['airtable_base_key'], table, api_key=ctx.obj['airtable_key'])
+    airtable.update(record_id, {field: value})
+    logger.debug('Table %s, id %s: %s set to %s', table, record_id, field, value)
+
 # ################################################################### MAIN FLOW
 # #############################################################################
 @click.group()
@@ -82,13 +96,7 @@ def main(ctx, notify_mail, debug, dry_run, test_mail):
             raise RuntimeError(f'Missing env variable "{x}"')
         ctx.obj[x.lower()] = os.environ[x]
 
-    table_def = [
-        ('Immersion', 'immersions', MAPPINGS_IMMERSION),
-        ('Fiches PSH', 'people', MAPPINGS_PEOPLE),
-        ('Entreprises / Employeurs', 'companies', MAPPINGS_ENTREPRISE),
-    ]
-
-    for table, key, mapping in table_def:
+    for table, key, mapping in AIRTABLES:
         logger.info('Preparing to query airtable "%s"', table)
         temp_table = Airtable(ctx.obj['airtable_base_key'], table, api_key=ctx.obj['airtable_key'])
         ctx.obj[key] = get_all(temp_table, mapping)
@@ -109,6 +117,9 @@ def main(ctx, notify_mail, debug, dry_run, test_mail):
 @main.command()
 @click.pass_context
 def daily_jdb_psh(ctx):
+    """
+    Envoi du journal de bord journalier aux PSH
+    """
     # Clean list
     records = [x for x in ctx.obj['immersions'].values() if x['start_date']]
     for rec in records:
@@ -160,6 +171,18 @@ def daily_jdb_psh(ctx):
             subject=f'Rappel JDB PSH Sent: {person_rec["mail"]}',
             to='andi@beta.gouv.fr'
         )
+
+
+@main.command()
+@click.pass_context
+def bilan_entreprise(ctx):
+    """
+    Envoi du bilan de fin d'immersion aux entreprises
+    """
+    records = {k:x for k, x in ctx.obj['immersions'].items() if x['end_date'] and x['stage'] == 'Immersion terminée'}
+
+    for rec_id, rec in records.items():
+        update_table(ctx, 'Immersion', rec_id, 'Bilan envoyé', True)
 
 
 if __name__ == '__main__':
