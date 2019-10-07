@@ -20,9 +20,11 @@ jobs:
     script:
     - echo "Building commit $TRAVIS_COMMIT"
     - cd evolutility
-    #- echo "$DOCKER_PW" | docker login -u "$DOCKER_USER" --password-stdin
-    - 'docker build -t andi_evolutility --build-arg PG_USER=$PG_USER  --build-arg
-      PG_PASS=$PG_PASS --build-arg PG_PORT=$PG_PORT ./
+    - 'docker build -t andi_evolutility
+      --build-arg PG_USER=$PG_USER
+      --build-arg PG_PASS=$PG_PASS
+      --build-arg PG_PORT=$PG_PORT
+      ./
 
       '
     - docker images
@@ -32,10 +34,13 @@ jobs:
   - name: Build docker form_handler
     script:
     - cd form_handler
-    # - echo "$DOCKER_PW" | docker login -u "$DOCKER_USER" --password-stdin
-    - 'docker build -t andi_formhandler --build-arg ARG_MG_BOX=$MAILGUN_BOX --build-arg
-      ARG_MG_KEY=$MAILGUN_KEY --build-arg PG_USER=$PG_USER  --build-arg PG_PASS=$PG_PASS
-      --build-arg PG_PORT=$PG_PORT ./
+    - 'docker build -t andi_formhandler
+      --build-arg ARG_MG_BOX=$MAILGUN_BOX
+      --build-arg ARG_MG_KEY=$MAILGUN_KEY
+      --build-arg PG_USER=$PG_USER
+      --build-arg PG_PASS=$PG_PASS
+      --build-arg PG_PORT=$PG_PORT
+      ./
 
       '
     - docker images
@@ -62,8 +67,6 @@ jobs:
     name: Deploy docker evolutility
     if: branch = master AND type = push AND fork = false
     script:
-    # - ssh -i deploy_ed25519 travis@andi.beta.gouv.fr "echo ${DOCKER_PW} | docker login
-    #   -u ${DOCKER_USER} --password-stdin"
     - ssh -i deploy_ed25519 travis@andi.beta.gouv.fr "docker pull berzemus/private:andi_evolutility
       || true"
     - ssh -i deploy_ed25519 travis@andi.beta.gouv.fr "docker stop evolutility || true"
@@ -73,8 +76,6 @@ jobs:
   - name: Deploy docker form_handler
     if: branch = master AND type = push AND fork = false
     script:
-    # - ssh -i deploy_ed25519 travis@andi.beta.gouv.fr "echo ${DOCKER_PW} | docker login
-    #   -u ${DOCKER_USER} --password-stdin"
     - ssh -i deploy_ed25519 travis@andi.beta.gouv.fr "docker pull berzemus/private:andi_formhandler
       || true"
     - ssh -i deploy_ed25519 travis@andi.beta.gouv.fr "docker stop formhandler || true"
@@ -83,7 +84,7 @@ jobs:
       berzemus/private:andi_formhandler"
 
   - name: Deploy docker send_bot
-    # if: branch = master AND type = push AND fork = false
+    if: branch = master AND type = push AND fork = false
     script:
     - ssh -i deploy_ed25519 travis@andi.beta.gouv.fr "docker pull berzemus/private:andi_sendbot
       || true"
@@ -93,7 +94,5 @@ addons:
 before_install:
 - openssl aes-256-cbc -K $encrypted_2925775a3854_key -iv $encrypted_2925775a3854_iv
   -in misc/deploy_ed25519.enc -out ./deploy_ed25519 -d
-# - openssl aes-256-cbc -K $encrypted_218785b12a81_key -iv $encrypted_218785b12a81_iv
-#   -in misc/deploy_ed25519.enc -out deploy_ed25519 -d
 - chmod 600 deploy_ed25519
 - echo "$DOCKER_PW" | docker login -u "$DOCKER_USER" --password-stdin
