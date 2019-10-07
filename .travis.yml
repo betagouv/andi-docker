@@ -41,17 +41,16 @@ jobs:
     - docker images
     - docker tag andi_formhandler $DOCKER_USER/private:andi_formhandler
     - docker push $DOCKER_USER/private:andi_formhandler
-
   - name: Build docker send_bot
     script:
-      - cd sendbot
-      - 'docker build -t andi_sendbot 
-        --build-arg PG_DSN=$PG_DSN
-        --build-arg MG_BOX=$MAILGUN_BOX
-        --build-arg MG_KEY=$MAILGUN_KEY
-        --build-arg AIRTABLE_KEY=$AIRTABLE_KEY
-        --build-arg AIRTABLE_BASE_KEY=$AIRTABLE_BASE_KEY_1
-        ./
+    - cd sendbot
+    - 'docker build -t andi_sendbot 
+      --build-arg PG_DSN=$PG_DSN
+      --build-arg MG_BOX=$MAILGUN_BOX
+      --build-arg MG_KEY=$MAILGUN_KEY
+      --build-arg AIRTABLE_KEY=$AIRTABLE_KEY
+      --build-arg AIRTABLE_BASE_KEY=$AIRTABLE_BASE_KEY_1
+      ./
 
       '
     - docker images
