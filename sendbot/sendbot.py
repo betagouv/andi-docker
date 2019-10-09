@@ -3,7 +3,6 @@ import logging
 import click
 from airtable import Airtable
 import os
-from pprint import pprint as print
 import datetime
 from datetime import datetime as dt
 import psycopg2
@@ -61,11 +60,12 @@ def get_assets(mail_def, dbconn):
     data = {k: v for k, v in results}
     return(data)
 
+
 # ################################################################### MAIN FLOW
 # #############################################################################
 @click.group()
 @click.pass_context
-@click.option('--notify-mail', is_flag=True, default=False)
+@click.option('--notify-mail', help='mail adress to notify to', default=None)
 @click.option('--debug', is_flag=True, default=False)
 @click.option('--dry-run', is_flag=True, default=False)
 @click.option('--test-mail', help='Mail adress to send mails to', default=None)
@@ -98,8 +98,6 @@ def main(ctx, notify_mail, debug, dry_run, test_mail):
                 i += 1
                 if i > 3:
                     break
-                print(f"{table} {k} : ")
-                print(v)
         # Avoid triggering airtable throttling
         time.sleep(.5)
 
@@ -154,12 +152,13 @@ def daily_jdb_psh(ctx):
 
         logger.debug('Sending mail to %s', mail_data['prenom'])
         send_mail('jdb_psh', mail_data, mail_assets)
-        notify_mail(
-            mail_type='jdb_psh',
-            data=mail_data,
-            subject=f'Rappel JDB PSH Sent: {person_rec["mail"]}',
-            to='andi@beta.gouv.fr'
-        )
+        if ctx.obj['notif_mail'] is not None:
+            notify_mail(
+                mail_type='jdb_psh',
+                data=mail_data,
+                subject=f'Rappel JDB PSH Sent: {person_rec["mail"]}',
+                to=ctx.obj['notif_mail']
+            )
 
 
 if __name__ == '__main__':
