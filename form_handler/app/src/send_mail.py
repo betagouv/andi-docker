@@ -1,8 +1,7 @@
 import logging
 import os
-import pprint
+# import pprint
 import re
-import urllib
 
 # import json
 import mistune
@@ -48,23 +47,38 @@ MASK_INSCRIPTION_TEXT = """
 MASK_NOTIFICATION = """
 Nouvel reçu envoi sur {{form_type}}:
 
+
 {{data}}
 """
 
 MAILGUN_KEY = os.environ['MG_KEY']
 MAILGUN_SANDBOX = os.environ['MG_BOX']
 
-def notify_mail(form_type, data):
-    text = Liquid(MASK_NOTIFICATION).render(
+
+def dict2table(data):
+    html = ['<br><br><table width="90%" align="left" border=5 bordercolorlight="#ccc" bordercolordark="#444">']
+    for k, v in data.items():
+        html.append('<tr>')
+        html.append(f'<th width="20%" style="padding:3px;background-color:#000;color:#fff;font-weight:bold">{ k }</th>')
+        html.append(f'<td width="80%" style="padding:3px;">{ v }</td>')
+        html.append('</tr>')
+    html.append('</table>')
+    return ''.join(html)
+
+
+def notify_mail(form_type, data, to='andi@beta.gouv.fr'):
+    content_html = Liquid(MASK_NOTIFICATION).render(
         form_type=form_type,
-        data=pprint.pformat(data, indent=4)
+        data=dict2table(data)
     )
     subject = f'Formulaire reçu type "{form_type}"'
     send(
         recipient='andi@beta.gouv.fr',
         subject=subject,
-        text=text
+        text=cleanhtml(content_html),
+        html=content_html
     )
+
 
 def get_template(form_type):
     current_dir = os.path.dirname(os.path.abspath(__file__))
