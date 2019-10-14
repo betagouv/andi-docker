@@ -111,12 +111,17 @@ def main(ctx, notify_mail, debug, dry_run, test_mail):
 @click.pass_context
 def daily_jdb_psh(ctx):
     # Clean list
-    records = [x for x in ctx.obj['immersions'].values() if x['start_date']]
+    records = [x for x in ctx.obj['immersions'].values() if x['start_date'] and x['end_date']]
     for rec in records:
-        rec['start_date_dt'] = dt.strptime(rec['start_date'], '%Y-%m-%d')
-        rec['end_date_dt'] = dt.strptime(rec['end_date'], '%Y-%m-%d') + datetime.timedelta(0, 23 * 3600 + 59 * 60 + 59)
-        rec['person'] = rec['person'][0]
-        rec['company'] = rec['companies'][0]
+        try:
+            rec['start_date_dt'] = dt.strptime(rec['start_date'], '%Y-%m-%d')
+            rec['end_date_dt'] = dt.strptime(rec['end_date'], '%Y-%m-%d') + datetime.timedelta(0, 23 * 3600 + 59 * 60 + 59)
+            rec['person'] = rec['person'][0]
+            rec['company'] = rec['companies'][0]
+        except Exception as exc:
+            logger.critical('Encountered error with record %s', rec)
+            logger.exception(exc)
+            raise
 
     # Filter
     now = dt.now()
