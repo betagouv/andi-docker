@@ -77,6 +77,9 @@ def main(ctx, notify_mail, debug, dry_run, test_mail):
     ctx.obj['test_mail'] = test_mail
     ctx.obj['notif_mail'] = notify_mail
 
+    if ctx.obj['dry_run']:
+        logger.debug('Dry Run enabled')
+
     for x in ['AIRTABLE_KEY', 'AIRTABLE_BASE_KEY', 'PG_DSN', 'MG_BOX', 'MG_KEY']:
         if x not in os.environ:
             raise RuntimeError(f'Missing env variable "{x}"')
@@ -151,6 +154,10 @@ def daily_jdb_psh(ctx):
         }
 
         logger.debug('Sending mail to %s', mail_data['prenom'])
+        if ctx.obj['dry_run']:
+            logger.debug('** DRY-RUN: Not sending anything **')
+            continue
+
         send_mail('jdb_psh', mail_data, mail_assets)
         if ctx.obj['notif_mail'] is not None:
             notify_mail(
