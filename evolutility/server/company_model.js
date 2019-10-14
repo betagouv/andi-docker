@@ -40,7 +40,8 @@ module.exports = {
         }, {
             id: 'taille',
             column: 'taille',
-            type: 'text',
+            type: 'lov',
+            lovTable: 'lov_taille',
             label: 'Taille',
             readOnly: false,
             inMany: true
