@@ -77,6 +77,9 @@ def main(ctx, notify_mail, debug, dry_run, test_mail):
     ctx.obj['test_mail'] = test_mail
     ctx.obj['notif_mail'] = notify_mail
 
+    if ctx.obj['dry_run']:
+        logger.debug('Dry Run enabled')
+
     for x in ['AIRTABLE_KEY', 'AIRTABLE_BASE_KEY', 'PG_DSN', 'MG_BOX', 'MG_KEY']:
         if x not in os.environ:
             raise RuntimeError(f'Missing env variable "{x}"')
@@ -108,12 +111,17 @@ def main(ctx, notify_mail, debug, dry_run, test_mail):
 @click.pass_context
 def daily_jdb_psh(ctx):
     # Clean list
-    records = [x for x in ctx.obj['immersions'].values() if x['start_date']]
+    records = [x for x in ctx.obj['immersions'].values() if x['start_date'] and x['end_date']]
     for rec in records:
-        rec['start_date_dt'] = dt.strptime(rec['start_date'], '%Y-%m-%d')
-        rec['end_date_dt'] = dt.strptime(rec['end_date'], '%Y-%m-%d') + datetime.timedelta(0, 23 * 3600 + 59 * 60 + 59)
-        rec['person'] = rec['person'][0]
-        rec['company'] = rec['companies'][0]
+        try:
+            rec['start_date_dt'] = dt.strptime(rec['start_date'], '%Y-%m-%d')
+            rec['end_date_dt'] = dt.strptime(rec['end_date'], '%Y-%m-%d') + datetime.timedelta(0, 23 * 3600 + 59 * 60 + 59)
+            rec['person'] = rec['person'][0]
+            rec['company'] = rec['companies'][0]
+        except Exception as exc:
+            logger.critical('Encountered error with record %s', rec)
+            logger.exception(exc)
+            raise
 
     # Filter
     now = dt.now()
@@ -151,6 +159,10 @@ def daily_jdb_psh(ctx):
         }
 
         logger.debug('Sending mail to %s', mail_data['prenom'])
+        if ctx.obj['dry_run']:
+            logger.debug('** DRY-RUN: Not sending anything **')
+            continue
+
         send_mail('jdb_psh', mail_data, mail_assets)
         if ctx.obj['notif_mail'] is not None:
             notify_mail(
