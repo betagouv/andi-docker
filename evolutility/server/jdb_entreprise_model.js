@@ -11,6 +11,7 @@ module.exports = {
         column: 'id_andi',
         type: 'text',
         label: 'Identifiant ANDi',
+        inMany: true,
         readOnly: true
     }, {
         id: 'date',
@@ -21,7 +22,8 @@ module.exports = {
     }, {
         id: 'utilisation_outils_it',
         column: 'utilisation_outils_it',
-        type: 'text',
+        type: 'lov',
+        lovTable: 'lov_ouinon',
         label: 'Utilisation outils IT',
         inMany: false,
     }, {
