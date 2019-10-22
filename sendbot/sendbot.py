@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 import logging
+import time
 import click
+import os
 from airtable import Airtable
 import os
+import requests
 import datetime
 from datetime import datetime as dt
 import psycopg2
@@ -13,6 +16,12 @@ from send_mail import send_mail, notify_mail
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.getLevelName('INFO'))
 logger.addHandler(logging.StreamHandler())
+
+TABLE_NAMES = {
+    'immersions': 'Immersion',
+    'people': 'Profils selectionnés',
+    'companies': 'Employeurs identifiés'
+}
 
 MAPPINGS_IMMERSION = [
     ('ID Immersion', 'id'),
@@ -61,21 +70,90 @@ def get_assets(mail_def, dbconn):
     return(data)
 
 
+def notify_slack(msg):
+    hook_path = os.environ['SLACK_HOOK']
+    hook_url = f'https://hooks.slack.com/services/{hook_path}'
+    block = {
+        'type': 'section',
+        'text': {
+            'type': 'mrkdwn',
+            'text': msg
+        },
+    }
+    for i in range(0, 10):
+        try:
+            resp = requests.post(
+                hook_url,
+                json={'blocks': [block]},
+            )
+            ok_to_proceed = resp.status_code == 200
+        except Exception:
+            ok_to_proceed = False
+
+        if ok_to_proceed:
+            return
+        elif i >= 10:
+            logger.warning('Failed to notify slack: %s / %s', resp.text, resp.status_code)
+            return
+
+        time.sleep(i)
+
+
+def CatchAllExceptions(cls, handler):
+
+    class Cls(cls):
+
+        _original_args = None
+
+        def make_context(self, info_name, args, parent=None, **extra):
+            # grab the original command line arguments
+            self._original_args = ' '.join(args)
+
+            try:
+                return super(Cls, self).make_context(
+                    info_name, args, parent=parent, **extra)
+            except Exception as exc:
+                # call the handler
+                handler(self, info_name, exc)
+
+        def invoke(self, ctx):
+            try:
+                return super(Cls, self).invoke(ctx)
+            except Exception as exc:
+                # call the handler
+                handler(self, ctx.info_name, exc)
+
+    return Cls
+
+
+def report_exception(cmd, info_name, exc):
+    logger.exception(exc)
+    if 'SLACK_HOOK' in os.environ:
+        notify_slack(f':bangbang: @chaîne @Pieterjan Echec envoi mailing: *{str(exc)}*')
+    else:
+        logger.warning('Could not notify Slack')
+
+
 # ################################################################### MAIN FLOW
 # #############################################################################
-@click.group()
+@click.group(cls=CatchAllExceptions(click.Group, handler=report_exception))
 @click.pass_context
 @click.option('--notify-mail', help='mail adress to notify to', default=None)
+@click.option('--notify-slack', is_flag=True, default=False)
 @click.option('--debug', is_flag=True, default=False)
 @click.option('--dry-run', is_flag=True, default=False)
 @click.option('--test-mail', help='Mail adress to send mails to', default=None)
-def main(ctx, notify_mail, debug, dry_run, test_mail):
+def main(ctx, notify_mail, notify_slack, debug, dry_run, test_mail):
     if debug:
         logger.setLevel(logging.getLevelName('DEBUG'))
         logger.debug('Debugging enabled')
     ctx.obj['dry_run'] = dry_run
     ctx.obj['test_mail'] = test_mail
     ctx.obj['notif_mail'] = notify_mail
+    ctx.obj['notify_slack'] = notify_slack
+    if notify_slack:
+        if 'SLACK_HOOK' not in os.environ:
+            raise RuntimeError('Missing slack token')
 
     if ctx.obj['dry_run']:
         logger.debug('Dry Run enabled')
@@ -86,12 +164,16 @@ def main(ctx, notify_mail, debug, dry_run, test_mail):
         ctx.obj[x.lower()] = os.environ[x]
 
     table_def = [
-        ('Immersion', 'immersions', MAPPINGS_IMMERSION),
-        ('Fiches PSH', 'people', MAPPINGS_PEOPLE),
-        ('Entreprises / Employeurs', 'companies', MAPPINGS_ENTREPRISE),
+        ('immersions', MAPPINGS_IMMERSION),
+        ('people', MAPPINGS_PEOPLE),
+        ('companies', MAPPINGS_ENTREPRISE),
     ]
 
-    for table, key, mapping in table_def:
+    for key, mapping in table_def:
+        table = TABLE_NAMES.get(key)
+        if table is None:
+            logger.critical('Could not access table "%s": check name', key)
+            raise RuntimeError('Wrong table definitions')
         logger.info('Preparing to query airtable "%s"', table)
         temp_table = Airtable(ctx.obj['airtable_base_key'], table, api_key=ctx.obj['airtable_key'])
         ctx.obj[key] = get_all(temp_table, mapping)
@@ -107,7 +189,7 @@ def main(ctx, notify_mail, debug, dry_run, test_mail):
     ctx.obj['dbconn'] = psycopg2.connect(ctx.obj['pg_dsn'])
 
 
-@main.command()
+@main.command(cls=CatchAllExceptions(click.Command, handler=report_exception))
 @click.pass_context
 def daily_jdb_psh(ctx):
     # Clean list
@@ -171,6 +253,9 @@ def daily_jdb_psh(ctx):
                 subject=f'Rappel JDB PSH Sent: {person_rec["mail"]}',
                 to=ctx.obj['notif_mail']
             )
+        if ctx.obj['notify_slack'] is not None:
+            msg_str = f':pouce: Rappel JDB PSH envoyé à {person_rec["mail"]}'
+            notify_slack(msg_str)
 
 
 if __name__ == '__main__':
