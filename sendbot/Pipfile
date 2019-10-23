@@ -16,6 +16,7 @@ unidecode = "*"
 psycopg2-binary = "*"
 mistune = "*"
 liquidpy = "*"
+isort = "*"
 
 [requires]
 python_version = "3.7"

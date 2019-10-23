@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-import logging
-import time
-import click
-import os
-from airtable import Airtable
-import os
-import requests
 import datetime
-from datetime import datetime as dt
-import psycopg2
-import time
+import logging
+import os
 import re
-from send_mail import send_mail, notify_mail
+import time
+from datetime import datetime as dt
+
+import click
+import psycopg2
+import requests
+from airtable import Airtable
+
+from send_mail import notify_mail, send_mail
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.getLevelName('INFO'))
