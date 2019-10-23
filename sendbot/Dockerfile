@@ -11,6 +11,7 @@ ENV AIRTABLE_BASE_KEY=$AIRTABLE_BASE_KEY
 ENV MG_BOX=$MG_BOX
 ENV MG_KEY=$MG_KEY
 ENV PG_DSN=$PG_DSN
+ENV SLACK_HOOK=$SLACK_HOOK
 
 RUN pip install --upgrade pip && pip install pipenv
 RUN apk add --no-cache bash postgresql-dev alpine-sdk && \
