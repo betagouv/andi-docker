@@ -55,6 +55,7 @@ jobs:
       --build-arg MG_KEY=$MAILGUN_KEY
       --build-arg AIRTABLE_KEY=$AIRTABLE_KEY
       --build-arg AIRTABLE_BASE_KEY=$AIRTABLE_BASE_KEY_1
+      --build-arg SLACK_HOOK=$SLACK_HOOK
       ./
 
       '

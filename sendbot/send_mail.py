@@ -1,8 +1,8 @@
+import copy
 import logging
 import os
 import pprint
 import re
-import copy
 
 # import json
 import mistune
