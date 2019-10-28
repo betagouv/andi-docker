@@ -92,3 +92,14 @@ def step_impl(context, field):
     print(sql)
     print(data)
     assert data[field] == context.sub_data[field]
+
+
+@then(u'the SQL query contains NULL data for "{field}"')
+def step_impl(context, field):
+    calls = context.pgw_mock.mock_calls
+    name, args, kwargs = calls[3]
+    sql = args[0]
+    data = args[1]
+    print(sql)
+    print(data)
+    assert data[field] is None
