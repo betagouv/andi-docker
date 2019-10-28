@@ -1,15 +1,16 @@
-matrix:
-    include:
-        - name: "Ubuntu 16.0.4 Xenial"
-          os: linux
-          dist: xenial
-          sudo: true
-          python:
-            - "3.7"
-services: "-docker"
 language: python
 python:
-- "3.7"
+  - 3.7
+matrix:
+    include:
+      - python: 2.7
+      - python: 3.4
+      - python: 3.5
+      - python: 3.6
+      - python: 3.7
+        dist: xenial
+        sudo: true
+services: "-docker"
 stages:
 - test
 - build
