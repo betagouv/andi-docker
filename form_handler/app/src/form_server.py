@@ -33,11 +33,13 @@ def cfg_get(config=''):
     config = {} if not opt_config_file else yaml.safe_load(opt_config_file)
     return {**def_config, **config}
 
+
 def handler_defs_get():
     current_dir = os.path.dirname(os.path.abspath(__file__))
     with open(f'{current_dir}/definitions.yaml', 'r') as def_file:
         handlers = yaml.safe_load(def_file)
     return handlers
+
 
 def data2hash(data):
     print(data.values())
@@ -69,6 +71,7 @@ def get_db(app):
         )
     return g.pgw.get_connection()
 
+
 def get_assets(formtype, dbconn):
     result = dbconn.execute(f'SELECT key, value FROM asset WHERE description = \'mail_{formtype}\'')
     results = result.fetchall()
@@ -78,13 +81,14 @@ def get_assets(formtype, dbconn):
 
 def gather(fields, request, is_post, is_get, is_json):
     if is_get:
-        data = {k : request.args.get(k) for k in fields}
+        data = {k: request.args.get(k) for k in fields}
     elif is_json:
         rawdata = request.get_json()
-        data = {k : rawdata.get(k) for k in fields}
+        data = {k: rawdata.get(k) for k in fields}
     else:
-        data = {k : request.form.get(k) for k in fields}
+        data = {k: request.form.get(k) for k in fields}
     return data
+
 
 def handle_request(request, app, definition):
     # Prepare parsing, gather data
@@ -110,7 +114,6 @@ def handle_request(request, app, definition):
     except Exception as exc:
         logger.exception(exc)
         raise exc
-
 
     if check != definition['hidden_check']:
         logger.debug('Check received: %s, expected: %s', check, definition['hidden_check'])
@@ -143,7 +146,6 @@ def handle_request(request, app, definition):
             mimetype='application/json'
         )
     store.set(submission_key, 'true')
-
 
     # Write to database
     if definition['persist_to_db']:
@@ -214,6 +216,7 @@ def create_app():
         return handle_request(request, app, definition)
 
     return app
+
 
 if __name__ == '__main__':
     create_app().run()
