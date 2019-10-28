@@ -17,14 +17,16 @@ landing_page:
             nom,
             email,
             entry_point,
-            questionnaire_sent
+            questionnaire_sent,
+            user_type
         )
         VALUES (
             %(prenom)s,
             %(nom)s,
             %(email)s,
             ARRAY['landing_page', 'andi_form_v2'],
-            TRUE
+            TRUE,
+            %(type_usager)s
         )
 
 jdb_psh:

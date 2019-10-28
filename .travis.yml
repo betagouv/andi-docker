@@ -106,5 +106,4 @@ before_install:
   -in misc/deploy_ed25519.enc -out ./deploy_ed25519 -d
 - chmod 600 deploy_ed25519
 - echo "$DOCKER_PW" | docker login -u "$DOCKER_USER" --password-stdin
-- pip install --upgrade pip
-- pip install pipenv
+- pip install --user pipenv

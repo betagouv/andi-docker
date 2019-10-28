@@ -33,4 +33,3 @@ Feature: submit subscription form
       When I submit a complete subscription by POST in JSON format
         Then the response code indicates a failure
         And the error message says "data already submitted"
-
