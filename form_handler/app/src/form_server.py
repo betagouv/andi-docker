@@ -92,6 +92,8 @@ def gather(fields, request, is_post, is_get, is_json):
 
 def handle_request(request, app, definition):
     # Prepare parsing, gather data
+    if app.testing:
+        logger.warning('Testing flag enabled => notifications disabled')
     is_post = request.method == 'POST'
     is_get = request.method == 'GET'
     is_json = request.content_type and 'application/json' in request.content_type
@@ -170,10 +172,10 @@ def handle_request(request, app, definition):
         with get_db(app) as dbconn:
             assets = get_assets(definition['name'], dbconn)
 
-        if definition['send_mail']:
+        if definition['send_mail'] and not app.testing:
             send_mail.send_mail(definition['name'], data, assets)
 
-        if definition['notify_mail']:
+        if definition['notify_mail'] and not app.testing:
             send_mail.notify_mail(definition['name'], data)
 
     except Exception as exc:
@@ -195,6 +197,7 @@ def create_app():
     CORS(app)
     app.config = {**app.config, **cfg_get('./config.yaml')}
     app.handlers = handler_defs_get()
+    app.testing = False
 
     @app.route('/')
     def hello():

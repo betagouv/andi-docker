@@ -2,6 +2,7 @@ Feature: submit subscription form
 
   Scenario: A form can successfully be submitted to the server using simple POST
     Given an instance of the server application
+    And a mock db interface
     And valid subscription data
       When I submit a complete subscription by POST
         Then I receive a response redirecting me to "https://andi.beta.gouv.fr/merci"
@@ -18,6 +19,7 @@ Feature: submit subscription form
 
   Scenario: A form can successfully be submitted to the server using GET
     Given an instance of the server application
+    And a mock db interface
     And valid subscription data
       When I submit a complete subscription by GET
         Then I receive a response indicating it worked
