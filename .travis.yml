@@ -16,7 +16,6 @@ stages:
 - deploy
 git:
   submodules: false
-dist: trusty
 sudo: false
 cache:
   directories:
