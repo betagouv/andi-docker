@@ -2,7 +2,6 @@ import csv
 import json
 import logging
 import os
-import sys
 
 import pgware
 import pickledb
@@ -145,7 +144,6 @@ def handle_request(request, app, definition):
                 abort(400)
             else:
                 logger.info('Ignored missing field %s: not required', k)
-
 
     logger.debug('Received data: %s', data)
 

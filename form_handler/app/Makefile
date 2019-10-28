@@ -1,4 +1,4 @@
-test: flake8 pylint behave
+tests: flake8 pylint behave
 
 isort:
 	pipenv run isort --recursive *.py

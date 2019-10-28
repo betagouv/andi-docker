@@ -84,7 +84,6 @@ def step_impl(context, field, field_value):
 
 @then(u'the SQL query contains the data from "{field}"')
 def step_impl(context, field):
-    check = context.sub_data[field]
     calls = context.pgw_mock.mock_calls
     name, args, kwargs = calls[3]
     sql = args[0]
