@@ -10,7 +10,7 @@ pylint:
 	pipenv run pylint *.py
 
 behave:
-	pipenv run behave tests/behave
+	export PYTHONPATH=$PYTHONPATH:./src && pipenv run behave tests/behave
 
 install:
 	pipenv sync --dev
