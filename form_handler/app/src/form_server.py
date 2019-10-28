@@ -43,7 +43,8 @@ def handler_defs_get():
 
 def data2hash(data):
     print(data.values())
-    key_info = ''.join(data.values())
+    values = [val for val in data.values() if val is not None]
+    key_info = ''.join(values)
     return str(hash(key_info))
 
 
@@ -80,14 +81,22 @@ def get_assets(formtype, dbconn):
 
 
 def gather(fields, request, is_post, is_get, is_json):
+    fieldnames = [k['name'] for k in fields]
     if is_get:
-        data = {k: request.args.get(k) for k in fields}
+        data = {k: request.args.get(k) for k in fieldnames}
     elif is_json:
         rawdata = request.get_json()
-        data = {k: rawdata.get(k) for k in fields}
+        data = {k: rawdata.get(k) for k in fieldnames}
     else:
-        data = {k: request.form.get(k) for k in fields}
+        data = {k: request.form.get(k) for k in fieldnames}
     return data
+
+
+def get_field_def(name, fields):
+    for field in fields:
+        if field['name'] == name:
+            return field
+    return None
 
 
 def handle_request(request, app, definition):
@@ -123,14 +132,20 @@ def handle_request(request, app, definition):
         abort(400)
 
     data = gather(definition['fields'], request, is_post, is_get, is_json)
-    for k, v in data.items():
-        if v is None:
-            logger.warning('Failed to gather key "%s"', k)
-            abort(400)
-
     print('---- data received ----')
     print(json.dumps(data, indent=2))
     print('-----------------------')
+
+    for k, v in data.items():
+        if v is None:
+            field_def = get_field_def(k, definition['fields'])
+            # Fields are required by default
+            if field_def.get('required', True):
+                logger.warning('Failed to gather key "%s"', k)
+                abort(400)
+            else:
+                logger.info('Ignored missing field %s: not required', k)
+
 
     logger.debug('Received data: %s', data)
 
@@ -160,8 +175,9 @@ def handle_request(request, app, definition):
 
     # Log to csv
     if definition['persist_to_csv']:
+        fieldnames = [k['name'] for k in definition['fields']]
         with open(app.config['csv_file'][definition['name']], 'a', newline='') as csvf:
-            columns = definition['fields'] + ['ip', 'form_type']
+            columns = fieldnames + ['ip', 'form_type']
             wr = csv.DictWriter(csvf, columns)
             wr.writerow({
                 'ip': request.remote_addr,
@@ -187,7 +203,12 @@ def handle_request(request, app, definition):
         return redirect(definition['redirect_url'], code=302)
 
     save_local_store(app)
-    return jsonify(data)
+    return_data = {k: v for k, v in data.items() if v is not None}
+    print('---- data returned ----')
+    print(json.dumps(return_data, indent=2))
+    print('-----------------------')
+
+    return jsonify(return_data)
 
 
 # ################################################################ FLASK ROUTES

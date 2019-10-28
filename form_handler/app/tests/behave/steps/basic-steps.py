@@ -11,7 +11,7 @@ def step_impl(context):
 @given(u'a mock db interface')
 def step_impl(context):
     pgw_mock = mock.MagicMock()
-    pgw_mock.__enter__.return_value = mock.Mock()
+    context.pgw_mock = pgw_mock
     server.pgware = pgw_mock
 
 
@@ -23,6 +23,7 @@ def step_impl(context):
 
 @then(u'I receive a response indicating it worked')
 def step_impl(context):
+    print(context.response)
     assert context.response.status_code == 200
 
 

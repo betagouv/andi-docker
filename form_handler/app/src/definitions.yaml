@@ -1,9 +1,11 @@
 landing_page:
     name: 'landing_page'
     fields:
-        - 'nom'
-        - 'prenom'
-        - 'email'
+        - name: 'nom'
+        - name: 'prenom'
+        - name: 'email'
+        - name: 'type_usager'
+          required: False
     redirect: True
     redirect_url : 'https://andi.beta.gouv.fr/merci'
     persist_to_db : True
@@ -32,12 +34,12 @@ landing_page:
 jdb_psh:
     name: 'jdb_psh'
     fields:
-        - 'andi_id'
-        - 'date'
-        - 'desc_activities'
-        - 'used_it_tools'
-        - 'desc_events_ok'
-        - 'desc_events_nook'
+        - name: 'andi_id'
+        - name: 'date'
+        - name: 'desc_activities'
+        - name: 'used_it_tools'
+        - name: 'desc_events_ok'
+        - name: 'desc_events_nook'
     redirect: False
     persist_to_db: True
     persist_to_csv: True
@@ -65,11 +67,11 @@ jdb_psh:
 jdb_entreprise:
     name: 'jdb_entreprise'
     fields:
-        - 'andi_id'
-        - 'date'
-        - 'used_it_tools'
-        - 'desc_facts'
-        - 'desc_difficulties'
+        - name: 'andi_id'
+        - name: 'date'
+        - name: 'used_it_tools'
+        - name: 'desc_facts'
+        - name: 'desc_difficulties'
     redirect: False
     persist_to_db: True
     persist_to_csv: False

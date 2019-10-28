@@ -80,3 +80,15 @@ def step_impl(context, message):
 @when(u'I add a new field "{field}" with value "{field_value}" to the data')
 def step_impl(context, field, field_value):
     context.sub_data[field] = field_value
+
+
+@then(u'the SQL query containts the data from "{field}"')
+def step_impl(context, field):
+    check = context.sub_data[field]
+    calls = context.pgw_mock.mock_calls
+    name, args, kwargs = calls[3]
+    sql = args[0]
+    data = args[1]
+    print(sql)
+    print(data)
+    assert data[field] == context.sub_data[field]
