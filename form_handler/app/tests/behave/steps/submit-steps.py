@@ -75,3 +75,8 @@ def step_impl(context):
 def step_impl(context, message):
     msg = context.response.get_json()
     assert msg['error'] == message
+
+
+@when(u'I add a new field "{field}" with value "{field_value}" to the data')
+def step_impl(context, field, field_value):
+    context.sub_data[field] = field_value
