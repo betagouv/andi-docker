@@ -82,7 +82,7 @@ def step_impl(context, field, field_value):
     context.sub_data[field] = field_value
 
 
-@then(u'the SQL query containts the data from "{field}"')
+@then(u'the SQL query contains the data from "{field}"')
 def step_impl(context, field):
     check = context.sub_data[field]
     calls = context.pgw_mock.mock_calls
