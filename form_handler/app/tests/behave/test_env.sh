@@ -1,0 +1,2 @@
+export MG_KEY=nonfunctional_testing
+export MG_BOX=nonfunctional_testing

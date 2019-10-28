@@ -2,7 +2,6 @@ import csv
 import json
 import logging
 import os
-import sys
 
 import pgware
 import pickledb
@@ -33,15 +32,18 @@ def cfg_get(config=''):
     config = {} if not opt_config_file else yaml.safe_load(opt_config_file)
     return {**def_config, **config}
 
+
 def handler_defs_get():
     current_dir = os.path.dirname(os.path.abspath(__file__))
     with open(f'{current_dir}/definitions.yaml', 'r') as def_file:
         handlers = yaml.safe_load(def_file)
     return handlers
 
+
 def data2hash(data):
     print(data.values())
-    key_info = ''.join(data.values())
+    values = [val for val in data.values() if val is not None]
+    key_info = ''.join(values)
     return str(hash(key_info))
 
 
@@ -69,6 +71,7 @@ def get_db(app):
         )
     return g.pgw.get_connection()
 
+
 def get_assets(formtype, dbconn):
     result = dbconn.execute(f'SELECT key, value FROM asset WHERE description = \'mail_{formtype}\'')
     results = result.fetchall()
@@ -77,17 +80,28 @@ def get_assets(formtype, dbconn):
 
 
 def gather(fields, request, is_post, is_get, is_json):
+    fieldnames = [k['name'] for k in fields]
     if is_get:
-        data = {k : request.args.get(k) for k in fields}
+        data = {k: request.args.get(k) for k in fieldnames}
     elif is_json:
         rawdata = request.get_json()
-        data = {k : rawdata.get(k) for k in fields}
+        data = {k: rawdata.get(k) for k in fieldnames}
     else:
-        data = {k : request.form.get(k) for k in fields}
+        data = {k: request.form.get(k) for k in fieldnames}
     return data
+
+
+def get_field_def(name, fields):
+    for field in fields:
+        if field['name'] == name:
+            return field
+    return None
+
 
 def handle_request(request, app, definition):
     # Prepare parsing, gather data
+    if app.testing:
+        logger.warning('Testing flag enabled => notifications disabled')
     is_post = request.method == 'POST'
     is_get = request.method == 'GET'
     is_json = request.content_type and 'application/json' in request.content_type
@@ -111,21 +125,25 @@ def handle_request(request, app, definition):
         logger.exception(exc)
         raise exc
 
-
     if check != definition['hidden_check']:
         logger.debug('Check received: %s, expected: %s', check, definition['hidden_check'])
         logger.error('Security check failed')
         abort(400)
 
     data = gather(definition['fields'], request, is_post, is_get, is_json)
-    for k, v in data.items():
-        if v is None:
-            logger.warning('Failed to gather key "%s"', k)
-            abort(400)
-
     print('---- data received ----')
     print(json.dumps(data, indent=2))
     print('-----------------------')
+
+    for k, v in data.items():
+        if v is None:
+            field_def = get_field_def(k, definition['fields'])
+            # Fields are required by default
+            if field_def.get('required', True):
+                logger.warning('Failed to gather key "%s"', k)
+                abort(400)
+            else:
+                logger.info('Ignored missing field %s: not required', k)
 
     logger.debug('Received data: %s', data)
 
@@ -144,7 +162,6 @@ def handle_request(request, app, definition):
         )
     store.set(submission_key, 'true')
 
-
     # Write to database
     if definition['persist_to_db']:
         try:
@@ -156,8 +173,9 @@ def handle_request(request, app, definition):
 
     # Log to csv
     if definition['persist_to_csv']:
+        fieldnames = [k['name'] for k in definition['fields']]
         with open(app.config['csv_file'][definition['name']], 'a', newline='') as csvf:
-            columns = definition['fields'] + ['ip', 'form_type']
+            columns = fieldnames + ['ip', 'form_type']
             wr = csv.DictWriter(csvf, columns)
             wr.writerow({
                 'ip': request.remote_addr,
@@ -168,10 +186,10 @@ def handle_request(request, app, definition):
         with get_db(app) as dbconn:
             assets = get_assets(definition['name'], dbconn)
 
-        if definition['send_mail']:
+        if definition['send_mail'] and not app.testing:
             send_mail.send_mail(definition['name'], data, assets)
 
-        if definition['notify_mail']:
+        if definition['notify_mail'] and not app.testing:
             send_mail.notify_mail(definition['name'], data)
 
     except Exception as exc:
@@ -183,7 +201,12 @@ def handle_request(request, app, definition):
         return redirect(definition['redirect_url'], code=302)
 
     save_local_store(app)
-    return jsonify(data)
+    return_data = {k: v for k, v in data.items() if v is not None}
+    print('---- data returned ----')
+    print(json.dumps(return_data, indent=2))
+    print('-----------------------')
+
+    return jsonify(return_data)
 
 
 # ################################################################ FLASK ROUTES
@@ -193,6 +216,7 @@ def create_app():
     CORS(app)
     app.config = {**app.config, **cfg_get('./config.yaml')}
     app.handlers = handler_defs_get()
+    app.testing = False
 
     @app.route('/')
     def hello():
@@ -214,6 +238,7 @@ def create_app():
         return handle_request(request, app, definition)
 
     return app
+
 
 if __name__ == '__main__':
     create_app().run()

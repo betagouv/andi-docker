@@ -1,4 +1,4 @@
-test: flake8 pylint behave
+tests: flake8 pylint behave
 
 isort:
 	pipenv run isort --recursive *.py
@@ -10,6 +10,8 @@ pylint:
 	pipenv run pylint *.py
 
 behave:
+	export PYTHONPATH=$PYTHONPATH:./src && \
+	. ./tests/behave/test_env.sh && \
 	pipenv run behave tests/behave
 
 install:

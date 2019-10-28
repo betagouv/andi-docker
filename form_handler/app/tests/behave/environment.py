@@ -9,7 +9,7 @@ from src import form_server as server
 
 @fixture
 def form_server(context):
-    app = server.app
+    app = server.create_app()
     context.pickle_handle, context.pickle_file = tempfile.mkstemp()
     context.csv_handle, context.csv_file = tempfile.mkstemp()
     # Pickle db needs valid JSON in exising file...
@@ -19,9 +19,11 @@ def form_server(context):
 
     app.config['pickle_db'] = context.pickle_file
     app.config['pickle_persist'] = True
-    app.config['csv_file'] = context.csv_file
+    for k in app.config['csv_file'].keys():
+        app.config['csv_file'][k] = context.csv_file
     app.testing = True
 
+    context.app = app
     context.server = app.test_client()
     yield context.server
     os.close(context.pickle_handle)

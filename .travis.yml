@@ -1,10 +1,22 @@
+language: python
+python:
+  - 3.7
+matrix:
+    include:
+      - python: 2.7
+      - python: 3.4
+      - python: 3.5
+      - python: 3.6
+      - python: 3.7
+        dist: xenial
+        sudo: true
 services: "-docker"
 stages:
+- test
 - build
 - deploy
 git:
   submodules: false
-dist: trusty
 sudo: false
 cache:
   directories:
@@ -13,6 +25,14 @@ notifications:
   slack: andi-startup:4EvkZ1UZEV4LwZXzvXhDGP8u
 jobs:
   include:
+  ########### TEST
+  - stage: test
+    name: Test form_handler component
+    script:
+    - echo "Testing form_handler component"
+    - cd form_handler/app
+    - pipenv install --dev
+    - make tests
 
   ########### BUILD
   - stage: build
@@ -97,3 +117,4 @@ before_install:
   -in misc/deploy_ed25519.enc -out ./deploy_ed25519 -d
 - chmod 600 deploy_ed25519
 - echo "$DOCKER_PW" | docker login -u "$DOCKER_USER" --password-stdin
+- pip install pipenv
