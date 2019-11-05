@@ -36,12 +36,14 @@ module.exports = {
         type: 'textmultiline',
         inMany: false,
         width: 100,
+        height: 5,
     }, {
         id: 'difficultes',
         label: 'Difficultés particulières',
         type: 'textmultiline',
         inMany: false,
         width: 100,
+        height: 5,
     }],
 
     groups: [{
