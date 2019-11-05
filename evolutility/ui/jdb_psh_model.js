@@ -12,7 +12,7 @@ module.exports = {
         required: true,
         readOnly: true,
         inMany: true,
-        width:50,
+        width: 50,
         maxLength: 120,
     }, {
         id: 'date',
@@ -20,7 +20,7 @@ module.exports = {
         label: 'Jour concerné',
         required: true,
         inMany: true,
-        width:50,
+        width: 50,
         maxLength: 120,
     }, {
         id: 'activites_semaines',
@@ -29,6 +29,7 @@ module.exports = {
         inMany: false,
         required: true,
         width:100,
+        height: 5,
     }, {
         id: 'utilisation_outils_it',
         label: 'Utilisation outils IT',
@@ -39,21 +40,23 @@ module.exports = {
             { 'id': 'oui', 'text': 'Oui' },
             { 'id': 'non', 'text': 'Non' },
         ],
-        width:100,
+        width: 100,
     }, {
         id: 'evenements_plu',
         type: 'textmultiline',
         label: 'Événements qui ont plu',
         inMany: false,
         required: true,
-        width:100,
+        width: 100,
+        height: 5,
     }, {
         id: 'evenements_deplu',
         type: 'textmultiline',
         label: 'Événements qui ont deplu',
         inMany: false,
         required: true,
-        width:100,
+        width: 100,
+        height: 5,
     }],
 
     groups: [{

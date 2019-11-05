@@ -10,7 +10,7 @@ module.exports = {
         id: "key",
         label: "Clé",
         type: "text",
-        width: 30,
+        width: 60,
         maxLength: 120,
         required: true,
         inMany: true
@@ -18,7 +18,7 @@ module.exports = {
         id: "description",
         label: "Groupe",
         type: "text",
-        width: 60,
+        width: 100,
         maxLength: 250,
         required: true,
         inMany: true
@@ -27,7 +27,7 @@ module.exports = {
         label: "Contenu",
         type: "textmultiline",
         width: 180,
-        height: 5,
+        height: 11,
         required: true,
         inMany: true
     }, {
@@ -35,7 +35,8 @@ module.exports = {
         label: "Contenu Markdown",
         type: "boolean",
         required: false,
-        inMany: false
+        inMany: false,
+        width: 40,
     }],
 
     groups: [{
@@ -43,7 +44,7 @@ module.exports = {
         type: "panel",
         label: "Meta",
         width: 100,
-        fields: ["key", "description", "markdown"]
+        fields: ["key", "markdown", "description"]
     }, {
         id: "p2",
         type: "panel",

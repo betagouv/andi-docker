@@ -188,7 +188,8 @@ module.exports = {
         //////////////// MISC DATA
             id: 'comments',
             type: 'textmultiline',
-            width: 100
+            width: 100,
+            height: 7,
         }
         ],
 
