@@ -10,7 +10,7 @@ module.exports = {
         id: "key",
         label: "Clé",
         type: "text",
-        width: 30,
+        width: 60,
         maxLength: 120,
         required: true,
         inMany: true
@@ -35,7 +35,8 @@ module.exports = {
         label: "Contenu Markdown",
         type: "boolean",
         required: false,
-        inMany: false
+        inMany: false,
+        width: 40,
     }],
 
     groups: [{
