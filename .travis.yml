@@ -84,6 +84,7 @@ jobs:
     name: Deploy docker evolutility
     # if: branch = master AND type = push AND fork = false
     script:
+    - echo "$DOCKER_PW" | docker login -u "$DOCKER_USER" --password-stdin
     - ssh -i deploy_ed25519 travis@$HOST "docker pull berzemus/private:andi_evolutility && sleep 5"
     - ssh -i deploy_ed25519 travis@$HOST "docker stop evolutility && sleep 4 || :"
     - ssh -i deploy_ed25519 travis@$HOST "docker run -d --rm -p 8080:3000
