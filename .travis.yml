@@ -23,6 +23,10 @@ cache:
   - public
 notifications:
   slack: andi-startup:4EvkZ1UZEV4LwZXzvXhDGP8u
+addons:
+  ssh_known_hosts: 
+  - andi.beta.gouv.fr
+  - 40.89.150.201
 jobs:
   include:
   ########### TEST
@@ -86,32 +90,30 @@ jobs:
   ########### DEPLOY
   - stage: deploy
     name: Deploy docker evolutility
-    if: branch = master AND type = push AND fork = false
+    # if: branch = master AND type = push AND fork = false
     script:
-    - ssh -i deploy_ed25519 travis@andi.beta.gouv.fr "docker pull berzemus/private:andi_evolutility
+    - ssh -i deploy_ed25519 travis@$HOST "docker pull berzemus/private:andi_evolutility
       || true"
-    - ssh -i deploy_ed25519 travis@andi.beta.gouv.fr "docker stop evolutility || true"
-    - ssh -i deploy_ed25519 travis@andi.beta.gouv.fr "docker run -d --rm -p 8080:3000
+    - ssh -i deploy_ed25519 travis@$HOST "docker stop evolutility || true"
+    - ssh -i deploy_ed25519 travis@$HOST "docker run -d --rm -p 8080:3000
       --add-host=database:172.17.0.1 --ip 172.17.0.2 --name evolutility berzemus/private:andi_evolutility"
 
   - name: Deploy docker form_handler
     if: branch = master AND type = push AND fork = false
     script:
-    - ssh -i deploy_ed25519 travis@andi.beta.gouv.fr "docker pull berzemus/private:andi_formhandler
+    - ssh -i deploy_ed25519 travis@$HOST "docker pull berzemus/private:andi_formhandler
       || true"
-    - ssh -i deploy_ed25519 travis@andi.beta.gouv.fr "docker stop formhandler || true"
-    - ssh -i deploy_ed25519 travis@andi.beta.gouv.fr "docker run -d --rm -p 8070:8080
+    - ssh -i deploy_ed25519 travis@$HOST "docker stop formhandler || true"
+    - ssh -i deploy_ed25519 travis@$HOST "docker run -d --rm -p 8070:8080
       --add-host=database:172.17.0.1 -v /data/logs:/log --ip 172.17.0.4 --name formhandler
       berzemus/private:andi_formhandler"
 
   - name: Deploy docker send_bot
     if: branch = master AND type = push AND fork = false
     script:
-    - ssh -i deploy_ed25519 travis@andi.beta.gouv.fr "docker pull berzemus/private:andi_sendbot
+    - ssh -i deploy_ed25519 travis@$HOST "docker pull berzemus/private:andi_sendbot
       || true"
    
-addons:
-  ssh_known_hosts: andi.beta.gouv.fr
 before_install:
 - openssl aes-256-cbc -K $encrypted_2925775a3854_key -iv $encrypted_2925775a3854_iv
   -in misc/deploy_ed25519.enc -out ./deploy_ed25519 -d
