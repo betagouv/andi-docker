@@ -9,8 +9,10 @@ git:
   submodules: false
 sudo: false
 cache:
+  pip
   directories:
   - public
+  - $HOME/.docker
 notifications:
   slack: andi-startup:4EvkZ1UZEV4LwZXzvXhDGP8u
 addons:
