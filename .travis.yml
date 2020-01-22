@@ -82,6 +82,7 @@ jobs:
 
   ########### DEPLOY
   - stage: deploy
+    if: branch = master AND type = push AND fork = false
     name: Deploy docker evolutility
     script:
     - ssh -i deploy_ed25519 travis@$HOST "docker pull berzemus/private:andi_evolutility && sleep 5"
