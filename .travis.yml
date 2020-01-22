@@ -41,6 +41,7 @@ jobs:
       --build-arg PG_USER=$PG_USER
       --build-arg PG_PASS=$PG_PASS
       --build-arg PG_PORT=$PG_PORT
+      --build-arg PG_DB=$PG_DB
       ./
 
       '
@@ -57,6 +58,7 @@ jobs:
       --build-arg PG_USER=$PG_USER
       --build-arg PG_PASS=$PG_PASS
       --build-arg PG_PORT=$PG_PORT
+      --build-arg PG_DB=$PG_DB
       ./
 
       '
