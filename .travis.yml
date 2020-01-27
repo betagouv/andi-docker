@@ -122,7 +122,7 @@ jobs:
     script:
     - ssh -i deploy_ed25519 travis@$HOST "docker pull berzemus/private:andi_publicgraphql && sleep 5"
     - ssh -i deploy_ed25519 travis@$HOST "docker stop graphql && sleep 4 || :"
-    - ssh -i deploy_ed25519 travis@$HOST "docker run -d --rm -p 8090:8080
+    - ssh -i deploy_ed25519 travis@$HOST "docker run -d --rm -p 2000:8080
       --add-host=database:172.17.0.1 -v /data/logs:/log --name graphql
       berzemus/private:andi_publicgraphql"
 
