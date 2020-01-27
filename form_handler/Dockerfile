@@ -12,6 +12,7 @@ RUN apk add --no-cache 'python3-dev>=3.7' bash postgresql-dev alpine-sdk && \
 COPY app/ /app
 
 WORKDIR /app
+      --build-arg ARG_MG_KEY=$Y
 
 ARG ARG_MG_BOX="nope"
 ARG ARG_MG_KEY="nope"
