@@ -41,6 +41,7 @@ jobs:
       --build-arg PG_USER=$PG_USER
       --build-arg PG_PASS=$PG_PASS
       --build-arg PG_PORT=$PG_PORT
+      --build-arg PG_DB=$PG_DB
       ./
 
       '
@@ -57,6 +58,7 @@ jobs:
       --build-arg PG_USER=$PG_USER
       --build-arg PG_PASS=$PG_PASS
       --build-arg PG_PORT=$PG_PORT
+      --build-arg PG_DB=$PG_DB
       ./
 
       '
@@ -101,7 +103,7 @@ jobs:
     script:
     - ssh -i deploy_ed25519 travis@$HOST "docker pull berzemus/private:andi_evolutility && sleep 5"
     - ssh -i deploy_ed25519 travis@$HOST "docker stop evolutility && sleep 4 || :"
-    - ssh -i deploy_ed25519 travis@$HOST "docker run -d --rm -p 8090:3000
+    - ssh -i deploy_ed25519 travis@$HOST "docker run -d --rm -p 8075:3000
       --add-host=database:172.17.0.1 --ip 172.17.0.2 --name evolutility berzemus/private:andi_evolutility"
 
   - name: Deploy docker form_handler
