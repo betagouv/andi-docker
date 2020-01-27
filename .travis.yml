@@ -85,7 +85,7 @@ jobs:
 
   - name: Build docker public_graphql
     script:
-    - cd form_handler
+    - cd public_graphql
     - 'docker build -t andi_publicgraphql
       --build-arg PG_USER=$PG_RO_USER
       --build-arg PG_PASS=$PG_RO_PASS
