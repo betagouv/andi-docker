@@ -39,7 +39,8 @@ COPY ./server/*.js /src/server/models/
 COPY ./ui/*.js /src/ui/src/models/
 
 WORKDIR /src/ui
-RUN sed -i "s|http://localhost:2000|https://andi.beta.gouv.fr:4430/proxy/|g" ./package.json
+RUN sed -i "s|/api/v1/|https://andi.beta.gouv.fr:4430/proxy/api/v1/|g" ./src/config.js
+RUN sed -i "s|http://localhost:2000||g" ./package.json
 RUN npm install && \
     npm run build
 
