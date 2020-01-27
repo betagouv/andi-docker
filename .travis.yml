@@ -65,6 +65,7 @@ jobs:
     - docker images
     - docker tag andi_formhandler $DOCKER_USER/private:andi_formhandler
     - docker push $DOCKER_USER/private:andi_formhandler
+
   - name: Build docker send_bot
     script:
     - cd sendbot
@@ -82,6 +83,21 @@ jobs:
     - docker tag andi_sendbot $DOCKER_USER/private:andi_sendbot
     - docker push $DOCKER_USER/private:andi_sendbot
 
+  - name: Build docker public_graphql
+    script:
+    - cd public_graphql
+    - 'docker build -t andi_publicgraphql
+      --build-arg PG_USER=$PG_RO_USER
+      --build-arg PG_PASS=$PG_RO_PASS
+      --build-arg PG_PORT=$PG_PORT
+      --build-arg PG_DB=$PG_DB
+      ./
+
+      '
+    - docker images
+    - docker tag andi_publicgraphql $DOCKER_USER/private:andi_publicgraphql
+    - docker push $DOCKER_USER/private:andi_publicgraphql
+
   ########### DEPLOY
   - stage: deploy
     if: branch = master AND type = push AND fork = false
@@ -90,7 +106,7 @@ jobs:
     - ssh -i deploy_ed25519 travis@$HOST "docker pull berzemus/private:andi_evolutility && sleep 5"
     - ssh -i deploy_ed25519 travis@$HOST "docker stop evolutility && sleep 4 || :"
     - ssh -i deploy_ed25519 travis@$HOST "docker run -d --rm -p 8075:3000
-      --add-host=database:172.17.0.1 --ip 172.17.0.2 --name evolutility berzemus/private:andi_evolutility"
+      --add-host=database:172.17.0.1 --name evolutility berzemus/private:andi_evolutility"
 
   - name: Deploy docker form_handler
     if: branch = master AND type = push AND fork = false
@@ -98,8 +114,17 @@ jobs:
     - ssh -i deploy_ed25519 travis@$HOST "docker pull berzemus/private:andi_formhandler && sleep 5"
     - ssh -i deploy_ed25519 travis@$HOST "docker stop formhandler && sleep 4 || :"
     - ssh -i deploy_ed25519 travis@$HOST "docker run -d --rm -p 8070:8080
-      --add-host=database:172.17.0.1 -v /data/logs:/log --ip 172.17.0.4 --name formhandler
+      --add-host=database:172.17.0.1 -v /data/logs:/log --name formhandler
       berzemus/private:andi_formhandler"
+
+  - name: Deploy docker public_graphql
+    if: branch = master AND type = push AND fork = false
+    script:
+    - ssh -i deploy_ed25519 travis@$HOST "docker pull berzemus/private:andi_publicgraphql && sleep 5"
+    - ssh -i deploy_ed25519 travis@$HOST "docker stop graphql && sleep 4 || :"
+    - ssh -i deploy_ed25519 travis@$HOST "docker run -d --rm -p 8090:8080
+      --add-host=database:172.17.0.1 -v /data/logs:/log --name graphql
+      berzemus/private:andi_publicgraphql"
 
   - name: Deploy docker send_bot
     if: branch = master AND type = push AND fork = false

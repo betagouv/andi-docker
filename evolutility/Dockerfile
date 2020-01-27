@@ -6,6 +6,7 @@ ARG PG_HOST="database"
 ARG PG_PORT="54320"
 ARG PG_DB="andi_entreprises"
 ENV DATABASE_URL=postgres://$PG_USER:$PG_PASS@$PG_HOST:$PG_PORT/$PG_DB
+ENV PUBLIC_URL="/"
 
 RUN mkdir /src
 WORKDIR /src
@@ -14,7 +15,9 @@ WORKDIR /src
 # RUN apt-get update && \
 #     apt-get install postgresql-client -y
 
-RUN npm install pm2@latest -g
+RUN npm install pm2@latest -g && \
+    npm install serve@latest -g
+    
 
 RUN echo "Cloning evolutility source.." && \
     # git clone https://github.com/evoluteur/evolutility-server-node.git ./ && \
@@ -28,15 +31,16 @@ WORKDIR /src/server
 
 RUN npm install
 
-WORKDIR /src/ui
-RUN npm install
-
 WORKDIR /src
 COPY ./start.sh /src/start.sh
 RUN chmod +x /src/start.sh
 COPY ./server/config.js /src/server/config.js
 COPY ./server/*.js /src/server/models/
 COPY ./ui/*.js /src/ui/src/models/
+
+WORKDIR /src/ui
+RUN npm install && \
+    npm run build
 
 WORKDIR /src
 # CMD ["/bin/bash"]
