@@ -145,6 +145,9 @@ jobs:
     - ssh -i deploy_ed25519 travis@$HOST "docker stop jupyter && sleep 4 || :"
     - ssh -i deploy_ed25519 travis@$HOST "docker run -d --rm -p 8077:45000
       -v /data/andi/andi-data/notebooks:/notebooks
+      -v /data/andi/andi-data/ressources:/ressources
+      -v /data/andi/andi-data/outputs:/outputs
+      -v /data/andi/andi-data/misc:/misc
       --add-host=database:172.17.0.1 --name jupyter
       berzemus/private:andi_jupyter"
 
