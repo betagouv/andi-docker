@@ -98,6 +98,18 @@ jobs:
     - docker tag andi_publicgraphql $DOCKER_USER/private:andi_publicgraphql
     - docker push $DOCKER_USER/private:andi_publicgraphql
 
+  - name: Build docker jupyter
+    script:
+    - cd jupyter
+    - 'docker build -t andi_jupyter
+      --build-arg PW=$JUPYTER_PW
+      ./
+
+      '
+    - docker images
+    - docker tag andi_jupyter $DOCKER_USER/private:andi_jupyter
+    - docker push $DOCKER_USER/private:andi_jupyter
+
   ########### DEPLOY
   - stage: deploy
     if: branch = master AND type = push AND fork = false
@@ -125,6 +137,16 @@ jobs:
     - ssh -i deploy_ed25519 travis@$HOST "docker run -d --rm -p 8090:2000
       --add-host=database:172.17.0.1 -v /data/logs:/log --name graphql
       berzemus/private:andi_publicgraphql"
+
+  - name: Deploy docker jupyter
+    if: branch = master AND type = push AND fork = false
+    script:
+    - ssh -i deploy_ed25519 travis@$HOST "docker pull berzemus/private:andi_jupyter && sleep 5"
+    - ssh -i deploy_ed25519 travis@$HOST "docker stop jupyter && sleep 4 || :"
+    - ssh -i deploy_ed25519 travis@$HOST "docker run -d --rm -p 8077:45000
+      -v /data/andi/andi-data/notebooks:/notebooks
+      --add-host=database:172.17.0.1 --name jupyter
+      berzemus/private:andi_jupyter"
 
   - name: Deploy docker send_bot
     if: branch = master AND type = push AND fork = false
