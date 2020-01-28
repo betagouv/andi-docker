@@ -6,4 +6,5 @@ jupyter notebook -y \
     --port=45000 \
     --notebook-dir=/notebooks \
     --no-browser \
+    --NotebookApp.base_url='/jupyter' \
     --NotebookApp.password=$PASW
