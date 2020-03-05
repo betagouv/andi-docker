@@ -14,7 +14,7 @@ module.exports = {
 
 	// OPTIONS
 	// Pagination and maximum number of rows
-	pageSize: 50,
+	pageSize: 200,
 	lovSize: 100,
 	csvSize: 1000,
 	csvHeader: 'id', //label', // possible values: id, label
