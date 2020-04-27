@@ -1,5 +1,7 @@
 ## Gestionnaire de réception de formulaire
-Reçois l'envoi d'un formulaire
+Reçoit l'envoi d'un formulaire
+
+**DEPRECATED**
 
 ## TODO
 - test réception données manquantes

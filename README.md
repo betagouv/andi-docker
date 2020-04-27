@@ -17,6 +17,8 @@ Divers services sous docker utilisés par ANDi. Chaque répertoire est un servic
 
 Les services dockers sont des composants péripheriques du service d'ANDi, non critiques au service metier, mais néanmoins nécessaires à la réalisation de ses objectifs.
 
+Ils sont pour la plupart **dépréciés**.
+
 ## evolutility
 Backend (_CRUD Interface_) pour la base de données PostgreSQL utilisée par ANDi. Elle emploie les composans open-source suivants:
 - https://github.com/evoluteur/evolutility-server-node
