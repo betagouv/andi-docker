@@ -70,18 +70,28 @@ module.exports = {
             inMany: true,
             width: 20,
         }, {
-        //////////////// PMSMP DATA
+        //////////////// Accueil DATA
             id: 'pmsmp_interest',
             label: 'Intérêt',
             type: 'boolean',
             help: 'A marqué un intérêt pour des immersions PMSMP',
-            width: 100
+            width: 50
+        }, {
+            id: 'boe',
+            type: 'boolean',
+            label: 'BOE',
+            width: 50,
         }, {
             id: 'pmsmp_count_recent',
             label: 'Nombre PMSMP 24 mois',
             type: 'integer',
             help: 'Nombre de PMSPM effectués ces 24 derniers mois',
             width: 100
+        }, {
+            id: 'andi_accueil',
+            type: 'boolean',
+            label: 'ANDi Accueil',
+            width: 100,
         }, {
         //////////////// LOCALISATION DATA
             id: 'numero',
@@ -130,6 +140,11 @@ module.exports = {
             width: 25
         }, {
         //////////////// CONTACT DATA
+            id: 'website',
+            label: 'Site Web',
+            type: 'text',
+            width: 100,
+        }, {
             id: 'phone_official_1',
             label: 'Téléphone général 1',
             type: 'text',
@@ -203,12 +218,13 @@ module.exports = {
                 'siret', 'naf', 'id',
             ]
         }, {
-            id: 'pmsmp_data',
+            id: 'acceuil_data',
             type: 'panel',
-            label: 'Données PMSMP',
+            label: 'Données Accueil',
             width: 30,
             fields: [
-                'pmsmp_interest', 'pmsmp_count_recent'
+                'pmsmp_interest', 'boe',
+                'andi_accueil',
             ]
         }, {
             id: 'adresse',
@@ -234,6 +250,7 @@ module.exports = {
             label: 'Données de contact',
             width: 100,
             fields : [
+                'website',
                 'phone_official_1', 'phone_official_2', 'email_official',
                 'contact_1_name', 'contact_1_role', 'contact_1_phone', 'contact_1_mail',
                 'contact_2_name', 'contact_2_role', 'contact_2_phone', 'contact_2_mail',

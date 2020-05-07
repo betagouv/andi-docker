@@ -56,14 +56,18 @@ module.exports = {
             type: 'integer',
             label: '#PMSMP 24 mois',
             readOnly: true,
-        },
-        // {
-        //     id: 'rating_us',
-        //     column: 'rating_us',
-        //     type: 'text',
-        //     label: 'Rating',
-        // },
-        {
+        }, {
+            id: 'boe',
+            column: 'boe',
+            type: 'boolean',
+            label: 'BOE',
+            readOnly: false
+        }, {
+            id: 'andi_accueil',
+            column: 'andi_accueil',
+            type: 'boolean',
+            label: 'ANDi Accueil',
+        }, {
             id: 'comments',
             column: 'comments',
             type: 'text',
@@ -113,10 +117,12 @@ module.exports = {
             column: 'lon',
             type: 'decimal',
             label: 'Longitude',
-        },
-
-
-        {
+        }, {
+            id: 'website',
+            column: 'website',
+            type: 'text',
+            label: 'Site Web',
+        }, {
             id: 'phone_official_1',
             column: 'phone_official_1',
             type: 'text',
