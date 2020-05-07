@@ -64,8 +64,7 @@ module.exports = {
     }, {
         id: 'acces',
         column: 'acces',
-        type: 'lov',
-        lovTable: 'lov_acces',
+        type: 'list',
         label: 'Accès',
         readOnly: false
     }, {
@@ -81,8 +80,7 @@ module.exports = {
     }, {
         id: 'pmr',
         column: 'pmr',
-        type: 'lov',
-        lovTable: 'lov_pmr',
+        type: 'list',
         label: 'PMR',
         readOnly: false
     }, {
@@ -93,8 +91,7 @@ module.exports = {
     }, {
         id: 'amenagement',
         column: 'amenagement',
-        type: 'lov',
-        lovTable: 'lov_amenagement',
+        type: 'list',
         label: 'Aménagements',
         readOnly: false
     }, {
@@ -105,8 +102,7 @@ module.exports = {
     }, {
         id: 'materiel',
         column: 'materiel',
-        type: 'lov',
-        lovTable: 'lov_materiel',
+        type: 'list',
         label: 'Matériel',
         readOnly: false
     }, {
@@ -123,6 +119,6 @@ module.exports = {
         id: 'plateforme_nom',
         column: 'plateforme_nom',
         type: 'text',
-        label: 'Matériel - Autre'
+        label: 'Nom Plateforme'
     }]
 }
