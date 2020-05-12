@@ -14,12 +14,10 @@ cache:
   - public
   - $HOME/.docker
   - $HOME/.cache/pip
-notifications:
-  slack: andi-startup:4EvkZ1UZEV4LwZXzvXhDGP8u
 addons:
   ssh_known_hosts: 
   - andi.beta.gouv.fr
-  - 40.89.150.201
+  - 158.156.182.58
 jobs:
   include:
   ########### TEST
@@ -66,22 +64,21 @@ jobs:
     - docker tag andi_formhandler $DOCKER_USER/private:andi_formhandler
     - docker push $DOCKER_USER/private:andi_formhandler
 
-  - name: Build docker send_bot
-    script:
-    - cd sendbot
-    - 'docker build -t andi_sendbot 
-      --build-arg PG_DSN=$PG_DSN
-      --build-arg MG_BOX=$MAILGUN_BOX
-      --build-arg MG_KEY=$MAILGUN_KEY
-      --build-arg AIRTABLE_KEY=$AIRTABLE_KEY
-      --build-arg AIRTABLE_BASE_KEY=$AIRTABLE_BASE_KEY_1
-      --build-arg SLACK_HOOK=$SLACK_HOOK
-      ./
-
-      '
-    - docker images
-    - docker tag andi_sendbot $DOCKER_USER/private:andi_sendbot
-    - docker push $DOCKER_USER/private:andi_sendbot
+  #- name: Build docker send_bot
+  #  script:
+  #  - cd sendbot
+  #  - 'docker build -t andi_sendbot 
+  #    --build-arg PG_DSN=$PG_DSN
+  #    --build-arg MG_BOX=$MAILGUN_BOX
+  #    --build-arg MG_KEY=$MAILGUN_KEY
+  #    --build-arg AIRTABLE_KEY=$AIRTABLE_KEY
+  #    --build-arg AIRTABLE_BASE_KEY=$AIRTABLE_BASE_KEY_1
+  #    --build-arg SLACK_HOOK=$SLACK_HOOK
+  #    ./
+  #    '
+  #  - docker images
+  #  - docker tag andi_sendbot $DOCKER_USER/private:andi_sendbot
+  #  - docker push $DOCKER_USER/private:andi_sendbot
 
   - name: Build docker public_graphql
     script:
@@ -120,14 +117,14 @@ jobs:
     - ssh -i deploy_ed25519 travis@$HOST "docker run -d --rm -p 8075:3000 -p 8076:2000
       --add-host=database:172.17.0.1 --name evolutility berzemus/private:andi_evolutility"
 
-  - name: Deploy docker form_handler
-    if: branch = master AND type = push AND fork = false
-    script:
-    - ssh -i deploy_ed25519 travis@$HOST "docker pull berzemus/private:andi_formhandler && sleep 5"
-    - ssh -i deploy_ed25519 travis@$HOST "docker stop formhandler && sleep 4 || :"
-    - ssh -i deploy_ed25519 travis@$HOST "docker run -d --rm -p 8070:8080
-      --add-host=database:172.17.0.1 -v /data/logs:/log --name formhandler
-      berzemus/private:andi_formhandler"
+ # - name: Deploy docker form_handler
+ #   if: branch = master AND type = push AND fork = false
+ #   script:
+ #   - ssh -i deploy_ed25519 travis@$HOST "docker pull berzemus/private:andi_formhandler && sleep 5"
+ #   - ssh -i deploy_ed25519 travis@$HOST "docker stop formhandler && sleep 4 || :"
+ #   - ssh -i deploy_ed25519 travis@$HOST "docker run -d --rm -p 8070:8080
+ #     --add-host=database:172.17.0.1 -v /data/logs:/log --name formhandler
+ #     berzemus/private:andi_formhandler"
 
   - name: Deploy docker public_graphql
     if: branch = master AND type = push AND fork = false
