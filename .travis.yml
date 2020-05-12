@@ -158,5 +158,6 @@ before_install:
   -in misc/deploy_ed25519.enc -out ./deploy_ed25519 -d
 - chmod 600 deploy_ed25519
 - echo "$DOCKER_PW" | docker login -u "$DOCKER_USER" --password-stdin
-- ssh -i deploy_ed25519 travis@$HOST "echo \"$DOCKER_PW\" | docker login -u \"$DOCKER_USER\" --password-stdin"
+# Disabled because can't login to new server
+# - ssh -i deploy_ed25519 travis@$HOST "echo \"$DOCKER_PW\" | docker login -u \"$DOCKER_USER\" --password-stdin"
 - pip install pipenv
