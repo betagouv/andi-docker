@@ -1,19 +1,19 @@
--i https://pypi.org/simple
+-i https://pypi.org/simple/
 airtable-python-wrapper==0.13.0
-attr-property==0.0.9
+attr-property==0.0.10
 attrs==19.3.0
-certifi==2020.4.5.1
-chardet==3.0.4
+certifi==2020.12.5
+chardet==4.0.0
 click==7.1.1
-diot==0.0.7
-idna==2.9
-inflection==0.4.0
+diot==0.1.1
+idna==2.10
+inflection==0.5.1
 isort==4.3.21
 liquidpy==0.5.0
 mistune==0.8.4
 psycopg2-binary==2.8.5
-pyyaml==5.3.1
-requests==2.23.0
-six==1.14.0
+pyyaml==5.4
+requests==2.25.1
+six==1.15.0
 unidecode==1.1.1
-urllib3==1.25.9
+urllib3==1.26.4
